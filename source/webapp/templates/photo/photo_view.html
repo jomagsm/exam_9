@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block title %}View{% endblock %}
+
+{% block menu %}
+{#    {% if perms.webapp.change_article or article.author == request.user %}#}
+{#        <li><a href="{% url 'webapp:article_update' article.pk %}">Update</a></li>#}
+{#    {% endif %}#}
+{#    {% if perms.webapp.delete_article or article.author == request.user %}#}
+{#        <li><a href="{% url 'webapp:article_delete' article.pk %}">Delete</a></li>#}
+{#    {% endif %}#}
+{#    <li><a href="{% url 'webapp:article_comment_add' article.pk %}">Add Comment</a></li>#}
+{% endblock %}
+
+{% block content %}
+    <div class="box">
+        <img src="{{ photo.image.url }}" class="card-img-top" alt="image">
+{#        <h1>{{ photo.title }}</h1>#}
+        <p class="pre">{{ photo.signature }}</p>
+        <p>By:
+            <a href="{% url 'accounts:detail' photo.author_id %}">{{ photo.author }}</a>
+            | {{ photo.created_at|date:"d.m.Y H:i:s" }}
+        </p>
+{#        <p>Published at: {{ article.publish_at|date:"d.m.Y H:i:s" }}</p>#}
+{#        <p>Tags: {% for tag in article.tags.all %}{{ tag.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>#}
+
+    </div>
+{% endblock %}

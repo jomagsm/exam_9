@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block menu %}
+{% endblock %}
+{% block content %}
+{#    фото, подпись, автора, и дату. #}
+    {% if is_paginated %}
+        {% include 'partial/pagination.html' %}
+    {% endif %}
+    <h1>Галерея!</h1>
+    {% csrf_token %}
+    <div class="row row-cols-1 row-cols-md-2">
+
+        {% for photo in photos%}
+            <div class="col mb-3">
+            <div class="card" style="width: 18rem;">
+    <img src="{{ photo.image.url }}" class="card-img-top" alt="image">
+    <div class="card-body">
+      <h5 class="card-title">{{ photo.author }}</h5>
+      <p class="card-text">{{ photo.signature }}</p>
+      <p class="card-text"><small class="text-muted">{{ photo.created_at }}</small></p>
+        <a href="{% url 'webapp:photo_view' photo.pk %}" class="btn btn-primary">Просмотр</a>
+    </div>
+  </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
