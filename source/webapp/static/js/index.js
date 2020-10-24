@@ -1,89 +1,159 @@
-let container = document.getElementsByClassName('container')[0]
-let card = document.createElement('div')
-console.log(container)
+const BASE_URL = 'http://localhost:8000/api/v1/';
 
-url_detail = 'http://localhost:8000/api/v1/quote/'
-url_rating = 'http://localhost:8000/api/v1/rating/'
 
-async function getRating(id,target){
-    data = await fetch(`${url_rating}${id}/${target}/`).then(response => response.json());
-    console.log(data)
-}
-
-async function getDetail(id){
-    data = await fetch(`${url_detail}${id}/`).then(response => response.json());
-    card.innerHTML=(`<div class="card mt-2">
-                        <div class="card-body">
-                        <p class="card-text">${data.text}</p>
-                        <p class="card-text">Автор: ${data.author}</p>
-                        <p class="card-text">Рейтинг: ${data.rating}
-                        <p class="btn btn-primary" id="${data.id}" data-target="+">+</p>
-                        <p class="btn btn-primary" id="${data.id}" data-target="-">-</p></p>
-                        <p class="card-text"> Статус: ${data.status_display}</p>
-<!--                        <p class="btn btn-primary" id="${data.id}"> Просмотр</p>-->
-                        <a href="http://localhost:8000/" class="btn btn-secondary">Назад</a>
-                        </div>
-                        </div>
-                        `)
-    container.append(card)
-    let button = document.getElementsByClassName('btn btn-primary')
-    // console.log(button)
-    for (let i = 0; i < button.length; i++){
-        button[i].onclick = function () {getRating(button[i].id, button[i].dataset.target)
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        let cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            let cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
         }
     }
-
-
-    // weather.innerHTML=('')
-    // for (let i = 1; i < 8; i++){
-    //     weather.innerHTML+=(`<button type="button" class="btn btn-secondary m-1 ${i}">День ${i}</button>`)
-    // }
-    // card.append(weather)
+    return cookieValue;
 }
 
-
-
-
-async function onLoad() {
-    data = await fetch('http://localhost:8000/api/v1/quote/')
-        .then(response => response.json());
-    for (let i = 0; i < data.length; i++){
-        card.innerHTML+=(`<div class="card mt-2">
-                        <div class="card-body">
-                        <p class="card-text">${data[i].text}</p>
-                        <p class="card-text">${data[i].author}</p>
-                        <p class="btn btn-primary" id="${data[i].id}"> Просмотр</p>
-<!--                        <a href="#" class="btn btn-primary" id="">${data[i].id}</a>-->
-                        </div>
-                        </div>
-                        `)
-    }
-    // console.log(card)
-    container.append(card)
-    let button = document.getElementsByClassName('btn btn-primary')
-    for (let i = 0; i < button.length; i++){
-        button[i].onclick = function () {getDetail(button[i].id)
-
-        }
-    }
-    console.log(button)
-    // console.log(container)
-    console.log(data)
-
-    // if(weather.innerHTML===''){
-    //     getData(data,0)}
-    // let button = document.getElementsByClassName('btn btn-primary m-1')
-    // for (let i = 0; i < 8; i++){
-    //      button[i].onclick = function(){getData(data,button[i].dataset.direction)}
-
+function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
 }
-window.addEventListener('load', onLoad);
 
-// <div class="card">
-//   <h5 class="card-header">Featured</h5>
-//   <div class="card-body">
-//     <h5 class="card-title">Special title treatment</h5>
-//     <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-//     <a href="#" class="btn btn-primary">Go somewhere</a>
-//   </div>
-// </div>
+async function makeRequest(url, method='GET', data=undefined) {
+    let opts = {method, headers: {}};
+
+    if (!csrfSafeMethod(method))
+        opts.headers['X-CSRFToken'] = getCookie('csrftoken');
+
+    if (data) {
+        opts.headers['Content-Type'] = 'application/json';
+        opts.body = JSON.stringify(data);
+    }
+
+    let response = await fetch(url, opts);
+
+    if (response.ok) {  // нормальный ответ
+        return await response.json();
+    } else {            // ошибка
+        let error = new Error(response.statusText);
+        error.response = response;
+        throw error;
+    }
+}
+
+async function add(event) {
+    event.preventDefault();
+    let addBtn = event.target;
+    let url = addBtn.href;
+    console.log(url);
+    try {
+        let response = await makeRequest(url, 'POST');
+        console.log(response);
+
+    }
+    catch (error) {
+        console.log(error);
+    }
+    console.log(addBtn)
+    addBtn.style.display="none"
+    console.log(addBtn.id)
+    const delBtn = addBtn.parentElement.getElementsByClassName('remove')[0];
+    console.log(delBtn)
+    delBtn.style.display="block"
+}
+
+async function remove(event) {
+    event.preventDefault();
+    let deleteBtn = event.target;
+    let url = deleteBtn.href;
+
+    try {
+        let response = await makeRequest(url , "DELETE");
+        console.log(response);
+
+    }
+    catch (error) {
+        console.log(error);
+    }
+    deleteBtn.style.display="none"
+    const add_Btn = deleteBtn.parentElement.getElementsByClassName('add')[0];
+    add_Btn.style.display="block"
+}
+
+window.addEventListener('load', function() {
+    const addButtons = document.getElementsByClassName('add');
+    const removeButtons = document.getElementsByClassName('remove');
+    console.log(addButtons)
+    for (let btn of addButtons) {btn.onclick = add}
+    for (let btn of removeButtons) {btn.onclick = remove}
+});
+
+
+
+// async function makeRequest(url, method='GET') {
+//     console.log(method)
+//     let response = await fetch(url, {method});
+//
+//     if (response.ok) {  // нормальный ответ
+//         return await response.text();
+//     } else {            // ошибка
+//         let error = new Error(response.statusText);
+//         error.response = response;
+//         throw error;
+//     }
+// }
+//
+// async function add(event) {
+//     event.preventDefault();
+//     let addBtn = event.target;
+//     let url = addBtn.href;
+//     console.log(url)
+//     try {
+//         let response = await makeRequest(url, 'POST');
+//         console.log(response);
+//         // const counter = likeBtn.parentElement
+//         //     .getElementsByClassName('counter')[0];
+//         // counter.innerText = response;
+//     }
+//     catch (error) {
+//         console.log(error);
+//     }
+//
+//     // likeBtn.classList.add('hidden');
+//     // const unlikeBtn = likeBtn.parentElement
+//     //     .getElementsByClassName('unlike')[0];
+//     // unlikeBtn.classList.remove('hidden');
+// }
+//
+// async function remove(event) {
+//     event.preventDefault();
+//     let unLikeBtn = event.target;
+//     let url = unLikeBtn.href;
+//
+//     try {
+//         let response = await makeRequest(url, 'DELETE');
+//         console.log(response);
+//         // const counter = unLikeBtn.parentElement
+//         //     .getElementsByClassName('counter')[0];
+//         // counter.innerText = response;
+//     }
+//     catch (error) {
+//         console.log(error);
+//     }
+//
+//     // unLikeBtn.classList.add('hidden');
+//     // const likeBtn = unLikeBtn.parentElement
+//     //     .getElementsByClassName('like')[0];
+//     // likeBtn.classList.remove('hidden');
+// }
+//
+// window.addEventListener('load', function() {
+//     const addButtons = document.getElementsByClassName('add');
+//     const removeButtons = document.getElementsByClassName('remove');
+//     console.log(addButtons)
+//     for (let btn of addButtons) {btn.onclick = add}
+//     for (let btn of removeButtons) {btn.onclick = remove}
+// });

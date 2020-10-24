@@ -1,9 +1,10 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.http import HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
+from django.views import View
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from webapp.forms import PhotoForm, PhotoCreateForm
 from webapp.models import Photo
@@ -71,3 +72,25 @@ class ProductDeleteView(PermissionRequiredMixin, DeleteView):
         photo = self.get_object()
         return self.request.user == photo.author or self.request.user.is_superuser \
                or self.request.user.has_perm('webapp.delete_photo')
+
+
+# class PhotoFavoritesAddView(LoginRequiredMixin, View):
+#     def get(self, request, *args, **kwargs):
+#         article = get_object_or_404(Photo, pk=kwargs.get('pk'))
+        # like, created = ArticleLike.objects.get_or_create(article=article, user=request.user)
+        # if created:
+        #     article.like_count += 1
+        #     article.save()
+        #     return HttpResponse(article.like_count)
+        # else:
+        #     return HttpResponseForbidden()
+
+
+# class PhotoFavoritesDellView(LoginRequiredMixin, View):
+#     def get(self, request, *args, **kwargs):
+#         article = get_object_or_404(Photo, pk=kwargs.get('pk'))
+        # like = get_object_or_404(article.likes, user=request.user)
+        # like.delete()
+        # article.like_count -= 1
+        # article.save()
+        # return HttpResponse(article.like_count)
