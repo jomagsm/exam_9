@@ -28,10 +28,6 @@ class PhotoDetailView(DetailView):
     model = Photo
     pk_url_kwarg = 'pk'
 
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super().dispatch(*args, **kwargs)
-
     def get_success_url(self):
         return reverse('webapp:photo_detail')
 
@@ -56,6 +52,11 @@ class PhotoUpdateView(PermissionRequiredMixin, UpdateView):
     template_name = 'photo/product_update.html'
     permission_required = 'webapp.change_product'
 
+    def test_func(self):
+        photo = self.get_object()
+        return self.request.user == photo.author or self.request.user.is_superuser \
+               or self.request.user.has_perm('webapp.change_photo')
+
     def get_success_url(self):
         return reverse('webapp:photo_view', kwargs={'pk': self.object.pk})
 
@@ -65,3 +66,8 @@ class ProductDeleteView(PermissionRequiredMixin, DeleteView):
     template_name = 'photo/photo_delete.html'
     success_url = reverse_lazy('webapp:index')
     permission_required = 'webapp.delete_photo'
+
+    def test_func(self):
+        photo = self.get_object()
+        return self.request.user == photo.author or self.request.user.is_superuser \
+               or self.request.user.has_perm('webapp.delete_photo')

@@ -19,3 +19,17 @@ class Photo(models.Model):
     class Meta:
         verbose_name = 'Фото'
         verbose_name_plural = 'Фотографии'
+
+
+class Favorites(models.Model):
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE,
+                             related_name='user_favorites', verbose_name='Пользователь', )
+    photo = models.ForeignKey('webapp.Photo', on_delete=models.CASCADE,
+                                related_name='photo', verbose_name='Фото')
+
+    def __str__(self):
+        return f'{self.user.username} - {self.photo.signature}'
+
+    class Meta:
+        verbose_name = 'Избранное'
+        verbose_name_plural = 'Избранные'

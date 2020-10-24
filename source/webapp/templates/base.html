@@ -1,41 +1,95 @@
 {% load staticfiles %}
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>{% block title %}My Site{% endblock %}</title>
+    <title>{% block title %}Галерея{% endblock %}</title>
 
-    <!-- XDSoft DateTimePicker -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css" integrity="sha256-DOS9W6NR+NFe1fUhEE0PGKY/fubbUCnOfTje2JMDw3Y=" crossorigin="anonymous" />
-
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.5.0/sketchy/bootstrap.min.css"
-          integrity="sha384-NkI/Nlr1DZ5rUXWWdnuZb97FQRgCCcwC66DC+HUCY0oVx6BgBHUfPcwL1vwp93JZ" crossorigin="anonymous">
-    {% block links %}{% endblock %}
+    <link rel="stylesheet" href="{% static "bootstrap/bootstrap.min.css" %}">
+<link rel="stylesheet" href="{% static "css/style.css" %}">
 </head>
-<body><div class="container">
+<body>
 <header>
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <a class="navbar-brand" href="{% url 'webapp:index' %}">Home</a>
-    <a class="navbar-brand" href="{% url 'webapp:photo_create' %}">Добавить Фото</a>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+{#                    <a class="nav-link" href="{% url 'webapp:index_project' %}">Главная <span#}
+{#                            class="sr-only">(current)</span></a>#}
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'webapp:index' %}">Главная<span
+                            class="sr-only">(current)</span></a>
+                </li>
+                {% if request.user.is_authenticated %}
+                        <li class="nav-item active">
+                            <a class="nav-link" href="{% url 'webapp:photo_create' %}">Добавить Фото<span
+                                    class="sr-only">(current)</span></a>
+                        </li>
+                {% block menu %}
+                {% endblock %}
+                    <li><a class="nav-link"
+                           href="{% url 'accounts:logout' %}">Logout</a></li>
+                    <li><a class="nav-link" href="{% url 'accounts:detail' request.user.pk %}">Привет, {{ request.user.get_full_name|default:request.user.username }}</a></li>
+                {% else %}
+                        <li><a class="nav-link" href="{% url 'accounts:login' %}">Login</a>
+                        </li>
+                        <li><a class="nav-link" href="{% url 'accounts:create' %}">Регистрация</a>
+                        </li>
+                    {% endif %}
+            </ul>
+        </div>
+    </nav>
+</header>
+<div class="container">
+    {% block content %}
+
+    {% endblock %}
+</div>
+</body>
+</html>
+
+
+
+
+{#{% load staticfiles %}#}
+{#<!doctype html>#}
+{#<html lang="en">#}
+{#<head>#}
+{#    <meta charset="UTF-8">#}
+{#    <meta name="viewport"#}
+{#          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">#}
+{#    <meta http-equiv="X-UA-Compatible" content="ie=edge">#}
+{#    <title>{% block title %}My Site{% endblock %}</title>#}
+{##}
+{#    <!-- XDSoft DateTimePicker -->#}
+{#    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css" integrity="sha256-DOS9W6NR+NFe1fUhEE0PGKY/fubbUCnOfTje2JMDw3Y=" crossorigin="anonymous" />#}
+{##}
+{#    <link rel="stylesheet" href="{% static 'css/style.css' %}">#}
+{#    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.5.0/sketchy/bootstrap.min.css"#}
+{#          integrity="sha384-NkI/Nlr1DZ5rUXWWdnuZb97FQRgCCcwC66DC+HUCY0oVx6BgBHUfPcwL1vwp93JZ" crossorigin="anonymous">#}
+{#    {% block links %}{% endblock %}#}
+{#</head>#}
+{#<body><div class="container">#}
+{#<header>#}
+{#<nav class="navbar navbar-expand-lg navbar-light bg-light">#}
+{#  <a class="navbar-brand" href="{% url 'webapp:index' %}">Home</a>#}
+{#    <a class="navbar-brand" href="{% url 'webapp:photo_create' %}">Добавить Фото</a>#}
 {#    <a class="navbar-brand" href="{% url 'webapp:index' %}">Home</a>#}
 {#    <a class="navbar-brand" href="{% url 'webapp:index' %}">Home</a>#}
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-  <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-    <div class="navbar-nav">
+{#  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">#}
+{#    <span class="navbar-toggler-icon"></span>#}
+{#  </button>#}
+{#  <div class="collapse navbar-collapse" id="navbarNavAltMarkup">#}
+{#    <div class="navbar-nav">#}
 {#      <a class="nav-link active" href="{% url 'webapp:index' %}">Home <span class="sr-only">(current)</span></a>#}
 {#      <a class="nav-link" href="#">Features</a>#}
 {#      <a class="nav-link" href="#">Pricing</a>#}
-      <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
-    </div>
-  </div>
-</nav>
-
+{#      <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>#}
+{#    </div>#}
+{#  </div>#}
+{#</nav>#}
+{##}
 {##}
 {##}
 {##}
@@ -78,11 +132,11 @@
 {#            </ul>#}
 {#        </div>#}
 {#    </nav>#}
-</header>
-    {% block content %}{% endblock %}
-    </div>
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js" integrity="sha256-FEqEelWI3WouFOo2VWP/uJfs1y8KJ++FLh2Lbqc8SJk=" crossorigin="anonymous"></script>
-    {% block scripts %}{% endblock %}
-</body>
-</html>
+{#</header>#}
+{#    {% block content %}{% endblock %}#}
+{#    </div>#}
+{#    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>#}
+{#    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js" integrity="sha256-FEqEelWI3WouFOo2VWP/uJfs1y8KJ++FLh2Lbqc8SJk=" crossorigin="anonymous"></script>#}
+{#    {% block scripts %}{% endblock %}#}
+{#</body>#}
+{#</html>#}

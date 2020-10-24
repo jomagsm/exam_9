@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from webapp.models import Photo
+from webapp.models import Photo, Favorites
 
 
 class PhotoAdmin(admin.ModelAdmin):
@@ -12,3 +12,4 @@ class PhotoAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Photo, PhotoAdmin)
+admin.site.register(Favorites)

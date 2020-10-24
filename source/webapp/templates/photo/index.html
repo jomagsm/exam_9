@@ -20,8 +20,12 @@
       <p class="card-text">{{ photo.signature }}</p>
       <p class="card-text"><small class="text-muted">{{ photo.created_at }}</small></p>
         <a href="{% url 'webapp:photo_view' photo.pk %}" class="btn btn-primary">Просмотр</a>
-        <a href="{% url 'webapp:photo_update' photo.pk %}" class="btn btn-primary">Редактировать</a>
+        {% if perms.webapp.change_photo or photo.author == request.user %}
+            <a href="{% url 'webapp:photo_update' photo.pk %}" class="btn btn-primary">Редактировать</a>
+    {% endif %}
+    {% if perms.webapp.delete_article or article.author == request.user %}
         <a href="{% url 'webapp:photo_delete' photo.pk %}" class="btn btn-primary">Удалить</a>
+    {% endif %}
     </div>
   </div>
             </div>
