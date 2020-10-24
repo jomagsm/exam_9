@@ -1,43 +1,47 @@
 {% extends 'base.html' %}
+{% load favorites_by %}
 {% load staticfiles %}
 {% block menu %}
 {% endblock %}
 {% block content %}
-{#    фото, подпись, автора, и дату. #}
-    {% if is_paginated %}
-        {% include 'partial/pagination.html' %}
-    {% endif %}
-    <h1>Галерея!</h1>
-    {% csrf_token %}
-    <div class="row row-cols-1 row-cols-md-2">
+{% if is_paginated %}
+    {% include 'partial/pagination.html' %}
+{% endif %}
+<h1>Галерея!</h1>
+{% csrf_token %}
+<div class="row row-cols-1 row-cols-md-2">
 
-        {% for photo in photos%}
-            <div class="col mb-3">
-            <div class="card" style="width: 18rem;">
-    <img src="{{ photo.image.url }}" class="card-img-top" alt="image">
-    <div class="card-body">
-      <h5 class="card-title">{{ photo.author }}</h5>
-      <p class="card-text">{{ photo.signature }}</p>
-      <p class="card-text"><small class="text-muted">{{ photo.created_at }}</small></p>
-        <a href="{% url 'webapp:photo_view' photo.pk %}" class="btn btn-primary">Просмотр</a>
-        {% if perms.webapp.change_photo or photo.author == request.user %}
-            <a href="{% url 'webapp:photo_update' photo.pk %}" class="btn btn-primary">Редактировать</a>
-    {% endif %}
-    {% if perms.webapp.delete_article or article.author == request.user %}
-        <a href="{% url 'webapp:photo_delete' photo.pk %}" class="btn btn-primary">Удалить</a>
-    {% endif %}
-     {% if user.is_authenticated %}
-                    <p>
-{#                        <span class="counter">{{ article.like_count }}</span>#}
-{#                        {% with article|liked_by:user as liked %}#}
-                            <a class="btn btn-primary add" id="{{ photo.id }}" href="{% url 'api:add_favorites' photo.id %}" >+</a>
-                            <a class="btn btn-primary remove" id="{{ photo.id }}" href="{% url 'api:remove_favorites' photo.id %}">-</a>
-{#                        {% endwith %}#}
-                    </p>
+    {% for photo in photos %}
+    <div class="col mb-3">
+        <div class="card" style="width: 18rem;">
+            <img src="{{ photo.image.url }}" class="card-img-top" alt="image">
+            <div class="card-body">
+                <h5 class="card-title">{{ photo.author }}</h5>
+                <p class="card-text">{{ photo.signature }}</p>
+                <p class="card-text"><small class="text-muted">{{ photo.created_at }}</small></p>
+                <a href="{% url 'webapp:photo_view' photo.pk %}" class="btn btn-primary">Просмотр</a>
+                {% if perms.webapp.change_photo or photo.author == request.user %}
+                    <a href="{% url 'webapp:photo_update' photo.pk %}" class="btn btn-primary">Редактировать</a>
                 {% endif %}
-    </div>
-  </div>
+                {% if perms.webapp.delete_photo or photo.author == request.user %}
+                    <a href="{% url 'webapp:photo_delete' photo.pk %}" class="btn btn-primary">Удалить</a>
+                {% endif %}
+                {% if user.is_authenticated %}
+                    <p>
+
+                {% endif %}
+
+
+            {{ photo.favorites_by }}
+            {% with photo|favorites_by:user as favorites %}
+                            <a class="btn btn-primary add" {% if favorites %}style="display: none"{% endif %} id="{{ photo.id }}" href="{% url 'api:add_favorites' photo.id %}">+</a>
+                <a class="btn btn-primary remove" {% if not favorites %}style="display: none"{% endif %} id="{{ photo.id }}"
+                   href="{% url 'api:remove_favorites' photo.id %}">-</a>
+            {% endwith %}
+                </p>
             </div>
-        {% endfor %}
+        </div>
     </div>
+    {% endfor %}
+</div>
 {% endblock %}

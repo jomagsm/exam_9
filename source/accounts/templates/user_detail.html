@@ -11,12 +11,6 @@
 
 {% block content %}
     <h1>Личная страница пользователя {{ user_obj.get_full_name|default:user_obj.username }}</h1>
-    <p>Избранные фото:</p>
-        {% for favorites in user_obj.user_favorites.all %}
-        <img class="avatar" src="{{ favorites.photo.image.url }}" width="250" height="250" alt="user picture">
-            {% empty %}
-            <p>Нет избраных фото</p>
-    {% endfor %}
 {#    {% if user_obj.user_favorites.all.len > 0 %}#}
 
 {#    {% endif %}#}
@@ -25,6 +19,15 @@
     <p>Фамилия: {{ user_obj.last_name }}</p>
     <p>Дата рождения: {{ user_obj.profile.birth_date|date:'d.m.Y' }}</p>
     <p>Почта: {{ user_obj.email }}</p>
+        <p>Избранные фото:</p>
+        {% for favorites in user_obj.user_favorites.all %}
+        <img class="avatar" src="{{ favorites.photo.image.url }}" width="250" height="250" alt="user picture">
+                        <h5 class="card-title">{{ favorites.photo.author }}</h5>
+                <p class="card-text">{{ favorites.photo.signature }}</p>
+                <p class="card-text"><small class="text-muted">{{ favorites.photo.created_at }}</small></p>
+        {% empty %}
+            <p>Нет избраных фото</p>
+    {% endfor %}
 
 {#    <h2 class="text-center clear">Статьи автора:</h2>#}
 {#    {% include 'partial/article_list.html' %}#}
