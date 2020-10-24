@@ -49,7 +49,7 @@ class PhotoCreateView(LoginRequiredMixin, CreateView):
 
 class PhotoUpdateView(PermissionRequiredMixin, UpdateView):
     model = Photo
-    form_class = PhotoForm
+    form_class = PhotoCreateForm
     template_name = 'photo/product_update.html'
     permission_required = 'webapp.change_product'
 
