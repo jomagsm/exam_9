@@ -1,9 +1,11 @@
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
-from django.views.generic import ListView, DetailView
-
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from webapp.forms import PhotoForm, PhotoCreateForm
 from webapp.models import Photo
 
 
@@ -33,34 +35,33 @@ class PhotoDetailView(DetailView):
     def get_success_url(self):
         return reverse('webapp:photo_detail')
 
-# class ProductView(DetailView):
-#     template_name = 'photo/photo_view.html'
-#     model = Photo
-#     paginate_reviews_by = 2
-#     paginate_reviews_orphans = 0
-#
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         reviews, page, is_paginated = self.paginate_reviews(self.object)
-#         if self.request.user.groups.filter(name='moderators').count():
-#             context['reviews'] = reviews
-#         else:
-#             if self.request.user.is_authenticated:
-#                 order_review = Review.objects.filter(product=self.object,author=self.request.user)
-#             else:
-#                 order_review = Review.objects.filter(product=self.object, status=True)
-#             context['reviews'] = order_review
-#         context['page_obj'] = page
-#         context['is_paginated'] = is_paginated
-#         return context
-#
-#     def paginate_reviews(self, product):
-#         reviews = product.product_order.all()
-#         if reviews.count() > 0:
-#             paginator = Paginator(reviews, self.paginate_reviews_by, orphans=self.paginate_reviews_orphans)
-#             page_number = self.request.GET.get('page', 1)
-#             page = paginator.get_page(page_number)
-#             is_paginated = paginator.num_pages > 1  # page.has_other_pages()
-#             return page.object_list, page, is_paginated
-#         else:
-#             return reviews, None, False
+
+class PhotoCreateView(LoginRequiredMixin, CreateView):
+    model = Photo
+    form_class = PhotoCreateForm
+    template_name = 'photo/photo_create.html'
+    permission_required = 'webapp.add_photo'
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse('webapp:photo_view', kwargs={'pk': self.object.pk})
+
+
+class PhotoUpdateView(PermissionRequiredMixin, UpdateView):
+    model = Photo
+    form_class = PhotoForm
+    template_name = 'photo/product_update.html'
+    permission_required = 'webapp.change_product'
+
+    def get_success_url(self):
+        return reverse('webapp:photo_view', kwargs={'pk': self.object.pk})
+
+
+class ProductDeleteView(PermissionRequiredMixin, DeleteView):
+    model = Photo
+    template_name = 'photo/photo_delete.html'
+    success_url = reverse_lazy('webapp:index')
+    permission_required = 'webapp.delete_photo'
