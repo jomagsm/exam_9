@@ -3,10 +3,11 @@
 
 {% block menu %}
     {% if perms.webapp.change_photo or photo.author == request.user %}
-        <li><a href="{% url 'webapp:photo_update' photo.pk %}">Update</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'webapp:photo_update' photo.pk %}">Update</a></li>
     {% endif %}
     {% if perms.webapp.delete_photo or photo.author == request.user %}
-        <li><a href="{% url 'webapp:photo_delete' photo.pk %}">Delete</a></li>
+
+        <li class="nav-item"><a class="nav-link" href="{% url 'webapp:photo_delete' photo.pk %}">Delete</a></li>
     {% endif %}
 {% endblock %}
 
