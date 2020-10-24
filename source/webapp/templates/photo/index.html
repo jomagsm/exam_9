@@ -29,15 +29,13 @@
                 {% if user.is_authenticated %}
                     <p>
 
-                {% endif %}
 
-
-            {{ photo.favorites_by }}
             {% with photo|favorites_by:user as favorites %}
                             <a class="btn btn-primary add btn-block" {% if favorites %}style="display: none"{% endif %} id="{{ photo.id }}" href="{% url 'api:add_favorites' photo.id %}">+</a>
                 <a class="btn btn-primary remove btn-block " {% if not favorites %}style="display: none"{% endif %} id="{{ photo.id }}"
                    href="{% url 'api:remove_favorites' photo.id %}">-</a>
             {% endwith %}
+                    {% endif %}
                 </p>
             </div>
         </div>
